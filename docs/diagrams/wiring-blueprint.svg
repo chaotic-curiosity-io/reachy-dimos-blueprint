@@ -1,0 +1,122 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 800" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <title>Wiring blueprint of the mecanum base: battery to two L298N drivers, ESP32 GPIO pairs to each L298N channel, four TT motors on mecanum wheels in the X configuration</title>
+  <defs>
+    <marker id="warrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#9cc3f5"/>
+    </marker>
+    <pattern id="grid" width="25" height="25" patternUnits="userSpaceOnUse">
+      <path d="M 25 0 L 0 0 0 25" fill="none" stroke="#16406e" stroke-width="0.6"/>
+    </pattern>
+  </defs>
+
+  <rect x="0" y="0" width="1000" height="800" fill="#0d2b4e"/>
+  <rect x="0" y="0" width="1000" height="800" fill="url(#grid)"/>
+  <rect x="8" y="8" width="984" height="784" fill="none" stroke="#9cc3f5" stroke-width="1.5"/>
+
+  <text x="500" y="42" text-anchor="middle" font-size="20" font-weight="700" letter-spacing="2" fill="#e8f1ff">MECANUM BASE — WIRING BLUEPRINT</text>
+  <text x="500" y="62" text-anchor="middle" font-size="12" fill="#9cc3f5">top view · FRONT AT TOP · pin map from firmware/wheels/device/pins.py (the source of truth)</text>
+
+  <!-- ===== battery ===== -->
+  <rect x="390" y="80" width="220" height="52" rx="5" fill="#123a66" stroke="#e8f1ff" stroke-width="1.6"/>
+  <text x="500" y="102" text-anchor="middle" font-size="13" font-weight="700" fill="#e8f1ff">BATTERY</text>
+  <text x="500" y="120" text-anchor="middle" font-size="10.5" fill="#9cc3f5">base's own — separate from the Reachy's</text>
+  <!-- battery to drivers -->
+  <path d="M 455 132 L 455 158 L 300 158 L 300 330" fill="none" stroke="#9cc3f5" stroke-width="1.8" marker-end="url(#warrow)"/>
+  <path d="M 545 132 L 545 158 L 700 158 L 700 330" fill="none" stroke="#9cc3f5" stroke-width="1.8" marker-end="url(#warrow)"/>
+  <text x="500" y="180" text-anchor="middle" font-size="10.5" fill="#e8f1ff">+ and − from battery to BOTH drivers:</text>
+  <text x="500" y="195" text-anchor="middle" font-size="10.5" fill="#e8f1ff">motor-supply (+12V) and GND terminals</text>
+
+  <!-- ===== wheels + motors, X config ===== -->
+  <!-- front left -->
+  <rect x="66" y="185" width="44" height="118" rx="8" fill="#123a66" stroke="#e8f1ff" stroke-width="1.6"/>
+  <path d="M 72 198 L 104 216 M 72 222 L 104 240 M 72 246 L 104 264 M 72 270 L 104 288" stroke="#9cc3f5" stroke-width="1.4"/>
+  <rect x="120" y="221" width="72" height="44" rx="4" fill="#123a66" stroke="#e8f1ff" stroke-width="1.4"/>
+  <text x="156" y="239" text-anchor="middle" font-size="10.5" font-weight="700" fill="#e8f1ff">TT MOTOR</text>
+  <text x="156" y="254" text-anchor="middle" font-size="10" fill="#9cc3f5">front_left</text>
+  <!-- rear left -->
+  <rect x="66" y="528" width="44" height="118" rx="8" fill="#123a66" stroke="#e8f1ff" stroke-width="1.6"/>
+  <path d="M 72 559 L 104 541 M 72 583 L 104 565 M 72 607 L 104 589 M 72 631 L 104 613" stroke="#9cc3f5" stroke-width="1.4"/>
+  <rect x="120" y="565" width="72" height="44" rx="4" fill="#123a66" stroke="#e8f1ff" stroke-width="1.4"/>
+  <text x="156" y="583" text-anchor="middle" font-size="10.5" font-weight="700" fill="#e8f1ff">TT MOTOR</text>
+  <text x="156" y="598" text-anchor="middle" font-size="10" fill="#9cc3f5">rear_left</text>
+  <!-- front right -->
+  <rect x="890" y="185" width="44" height="118" rx="8" fill="#123a66" stroke="#e8f1ff" stroke-width="1.6"/>
+  <path d="M 896 216 L 928 198 M 896 240 L 928 222 M 896 264 L 928 246 M 896 288 L 928 270" stroke="#9cc3f5" stroke-width="1.4"/>
+  <rect x="808" y="221" width="72" height="44" rx="4" fill="#123a66" stroke="#e8f1ff" stroke-width="1.4"/>
+  <text x="844" y="239" text-anchor="middle" font-size="10.5" font-weight="700" fill="#e8f1ff">TT MOTOR</text>
+  <text x="844" y="254" text-anchor="middle" font-size="10" fill="#9cc3f5">front_right</text>
+  <!-- rear right -->
+  <rect x="890" y="528" width="44" height="118" rx="8" fill="#123a66" stroke="#e8f1ff" stroke-width="1.6"/>
+  <path d="M 896 541 L 928 559 M 896 565 L 928 583 M 896 589 L 928 607 M 896 613 L 928 631" stroke="#9cc3f5" stroke-width="1.4"/>
+  <rect x="808" y="565" width="72" height="44" rx="4" fill="#123a66" stroke="#e8f1ff" stroke-width="1.4"/>
+  <text x="844" y="583" text-anchor="middle" font-size="10.5" font-weight="700" fill="#e8f1ff">TT MOTOR</text>
+  <text x="844" y="598" text-anchor="middle" font-size="10" fill="#9cc3f5">rear_right</text>
+
+  <!-- ===== L298N driver 1 (left) ===== -->
+  <rect x="220" y="330" width="160" height="180" rx="5" fill="#123a66" stroke="#e8f1ff" stroke-width="1.8"/>
+  <text x="300" y="353" text-anchor="middle" font-size="13" font-weight="700" fill="#e8f1ff">L298N — DRIVER 1</text>
+  <text x="300" y="369" text-anchor="middle" font-size="10" fill="#9cc3f5">left side · ENA/ENB ON</text>
+  <text x="372" y="395" text-anchor="end" font-size="10.5" fill="#e8f1ff">IN1 / IN2</text>
+  <text x="372" y="410" text-anchor="end" font-size="10" fill="#9cc3f5">ch A → OUT1/2</text>
+  <text x="372" y="443" text-anchor="end" font-size="10.5" fill="#e8f1ff">IN3 / IN4</text>
+  <text x="372" y="458" text-anchor="end" font-size="10" fill="#9cc3f5">ch B → OUT3/4</text>
+  <text x="300" y="497" text-anchor="middle" font-size="10" fill="#9cc3f5">5V regulator jumper ON</text>
+  <!-- driver1 ch A -> rear_left -->
+  <path d="M 220 402 L 206 402 L 206 587 L 192 587" fill="none" stroke="#9cc3f5" stroke-width="1.8" marker-end="url(#warrow)"/>
+  <!-- driver1 ch B -> front_left -->
+  <path d="M 220 450 L 206 450 L 206 243 L 192 243" fill="none" stroke="#9cc3f5" stroke-width="1.8" marker-end="url(#warrow)"/>
+
+  <!-- ===== L298N driver 2 (right) ===== -->
+  <rect x="620" y="330" width="160" height="180" rx="5" fill="#123a66" stroke="#e8f1ff" stroke-width="1.8"/>
+  <text x="700" y="353" text-anchor="middle" font-size="13" font-weight="700" fill="#e8f1ff">L298N — DRIVER 2</text>
+  <text x="700" y="369" text-anchor="middle" font-size="10" fill="#9cc3f5">right side · ENA/ENB ON</text>
+  <text x="628" y="395" font-size="10.5" fill="#e8f1ff">IN1 / IN2</text>
+  <text x="628" y="410" font-size="10" fill="#9cc3f5">ch A → OUT1/2</text>
+  <text x="628" y="443" font-size="10.5" fill="#e8f1ff">IN3 / IN4</text>
+  <text x="628" y="458" font-size="10" fill="#9cc3f5">ch B → OUT3/4</text>
+  <text x="700" y="497" text-anchor="middle" font-size="10" fill="#9cc3f5">5V regulator jumper ON</text>
+  <!-- driver2 ch A -> rear_right -->
+  <path d="M 780 402 L 794 402 L 794 587 L 808 587" fill="none" stroke="#9cc3f5" stroke-width="1.8" marker-end="url(#warrow)"/>
+  <!-- driver2 ch B -> front_right -->
+  <path d="M 780 450 L 794 450 L 794 243 L 808 243" fill="none" stroke="#9cc3f5" stroke-width="1.8" marker-end="url(#warrow)"/>
+
+  <!-- ===== ESP32 ===== -->
+  <rect x="425" y="330" width="150" height="180" rx="5" fill="#123a66" stroke="#e8f1ff" stroke-width="1.8"/>
+  <text x="500" y="355" text-anchor="middle" font-size="13" font-weight="700" fill="#e8f1ff">ESP32</text>
+  <text x="500" y="372" text-anchor="middle" font-size="10" fill="#9cc3f5">MicroPython · HTTP :80</text>
+  <text x="500" y="387" text-anchor="middle" font-size="10" fill="#9cc3f5">2 s deadman watchdog</text>
+  <text x="500" y="492" text-anchor="middle" font-size="10" fill="#9cc3f5">GND · VIN · USB</text>
+  <!-- GPIO wires to driver 1 -->
+  <path d="M 425 400 L 380 400" fill="none" stroke="#9cc3f5" stroke-width="1.6" marker-end="url(#warrow)"/>
+  <text x="402" y="394" text-anchor="middle" font-size="10.5" font-weight="700" fill="#e8f1ff">32, 33</text>
+  <path d="M 425 448 L 380 448" fill="none" stroke="#9cc3f5" stroke-width="1.6" marker-end="url(#warrow)"/>
+  <text x="402" y="442" text-anchor="middle" font-size="10.5" font-weight="700" fill="#e8f1ff">18, 13</text>
+  <!-- GPIO wires to driver 2 -->
+  <path d="M 575 400 L 620 400" fill="none" stroke="#9cc3f5" stroke-width="1.6" marker-end="url(#warrow)"/>
+  <text x="598" y="394" text-anchor="middle" font-size="10.5" font-weight="700" fill="#e8f1ff">25, 26</text>
+  <path d="M 575 448 L 620 448" fill="none" stroke="#9cc3f5" stroke-width="1.6" marker-end="url(#warrow)"/>
+  <text x="598" y="442" text-anchor="middle" font-size="10.5" font-weight="700" fill="#e8f1ff">27, 19</text>
+  <text x="500" y="416" text-anchor="middle" font-size="9.5" fill="#9cc3f5">GPIO pairs</text>
+  <text x="500" y="429" text-anchor="middle" font-size="9.5" fill="#9cc3f5">(IN_A, IN_B)</text>
+
+  <!-- 5V -> VIN dashed -->
+  <path d="M 340 510 L 340 540 L 462 540 L 462 510" fill="none" stroke="#ffd166" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#warrow)"/>
+  <text x="401" y="556" text-anchor="middle" font-size="10" fill="#ffd166">5V → VIN: untethered only — NEVER with USB</text>
+  <!-- common GND -->
+  <path d="M 268 510 L 268 586 L 732 586 L 732 510 M 538 510 L 538 586" fill="none" stroke="#9cc3f5" stroke-width="1.5"/>
+  <text x="500" y="601" text-anchor="middle" font-size="10.5" fill="#e8f1ff">COMMON GND — ESP32 ↔ both drivers, always connected (signal reference for the IN pins)</text>
+
+  <!-- channel-to-corner call lines -->
+  <text x="300" y="528" text-anchor="middle" font-size="9.5" fill="#9cc3f5">ch A rear_left · ch B front_left</text>
+  <text x="700" y="528" text-anchor="middle" font-size="9.5" fill="#9cc3f5">ch A rear_right (invert) · ch B front_right (invert)</text>
+
+  <!-- ===== notes ===== -->
+  <rect x="226" y="626" width="548" height="134" rx="5" fill="#0f3258" stroke="#9cc3f5" stroke-width="1.2"/>
+  <text x="244" y="650" font-size="11" font-weight="700" fill="#e8f1ff">NOTES</text>
+  <text x="244" y="670" font-size="10.5" fill="#e8f1ff">· Sign-magnitude drive: both IN pins are PWM @ 1 kHz — duty on IN_A or IN_B picks direction.</text>
+  <text x="244" y="688" font-size="10.5" fill="#e8f1ff">· ENA/ENB stay jumpered (always enabled): 8 GPIOs drive all 4 motors, no enable wires.</text>
+  <text x="244" y="706" font-size="10.5" fill="#e8f1ff">· MIN_DUTY 0.35 — below ~35% duty TT motors buzz without turning; speeds map onto 0.35..1.0.</text>
+  <text x="244" y="724" font-size="10.5" fill="#ffd166">· Never GPIO 12 (boot strap pin — board won't boot) or GPIO 14 (boot pulse train — ghost driving).</text>
+  <text x="244" y="742" font-size="10.5" fill="#e8f1ff">· Mecanum X configuration: roller axes form an X seen from above (hatching on the wheels).</text>
+  <text x="500" y="781" text-anchor="middle" font-size="10" fill="#7fa6d4">corner/invert assignments are per-build — regenerate with teleop.sh --calibrate</text>
+</svg>
