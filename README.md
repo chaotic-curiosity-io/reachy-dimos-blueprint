@@ -21,9 +21,10 @@ live. (GitHub serves repo-hosted video as a download, so it opens in a new tab.)
 ## Build it
 
 <p align="center">
-  <a href="docs/diagrams/wiring-blueprint.svg"><img src="docs/diagrams/wiring-blueprint.svg" width="520" alt="Wiring blueprint of the mecanum base, top view: a battery feeds two L298N drivers, the ESP32's GPIO pairs drive each driver channel, and four TT motors turn mecanum wheels laid out in an X"></a>
+  <a href="docs/diagrams/wiring-blueprint.svg"><img src="docs/diagrams/wiring-blueprint.svg" width="318" alt="Wiring blueprint of the mecanum base, top view: a battery feeds two L298N drivers, the ESP32's GPIO pairs drive each driver channel, and four TT motors turn mecanum wheels laid out in an X"></a>
+  <a href="docs/media/reachy-r3-stack.mp4"><img src="docs/media/reachy-driving.gif" width="440" alt="The finished robot — Reachy Mini on the mecanum base with the L515 clipped to its torso — driving itself across a wood floor between the legs of a dining table"></a>
   <br>
-  <sub>The base's wiring: GPIO map, power, and the mecanum X layout. Click to enlarge.</sub>
+  <sub>The base's wiring blueprint (click to enlarge) and the finished robot driving itself between table legs.</sub>
 </p>
 
 | | Parts |
