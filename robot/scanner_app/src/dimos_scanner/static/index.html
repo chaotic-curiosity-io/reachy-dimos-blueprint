@@ -1,0 +1,554 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>dimos_scanner — settings</title>
+<style>
+  :root {
+    --bg: #0f1115;
+    --panel: #181c24;
+    --panel-2: #1f2530;
+    --border: #2a3140;
+    --fg: #e7eaef;
+    --muted: #8a93a6;
+    --accent: #5b8def;
+    --accent-2: #4673d2;
+    --ok: #57c08a;
+    --err: #e26464;
+    --warn: #f0c674;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font: 14px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    margin: 0; padding: 2rem 1rem; min-height: 100vh;
+    background: var(--bg); color: var(--fg);
+  }
+  .wrap { max-width: 680px; margin: 0 auto; }
+  h1 { font-size: 22px; margin: 0 0 0.25rem; font-weight: 600; }
+  .lede { color: var(--muted); margin: 0 0 1.5rem; }
+  .card {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 12px; padding: 1rem 1.25rem; margin: 0 0 1rem;
+  }
+  .card h2 {
+    font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em;
+    color: var(--accent); margin: 0 0 0.75rem; font-weight: 600;
+  }
+  label { display: block; margin: 0.65rem 0 0.25rem; font-weight: 500; }
+  input, select {
+    width: 100%; padding: 0.55rem 0.7rem; font: inherit;
+    background: var(--panel-2); border: 1px solid var(--border);
+    color: var(--fg); border-radius: 8px;
+  }
+  input:focus, select:focus { outline: none; border-color: var(--accent); }
+  .row { display: flex; gap: 0.65rem; }
+  .row > * { flex: 1; }
+  .checkbox {
+    display: flex; align-items: center; gap: 0.5rem;
+    margin: 0.5rem 0; padding: 0.5rem 0.7rem;
+    background: var(--panel-2); border: 1px solid var(--border);
+    border-radius: 8px; cursor: pointer;
+  }
+  .checkbox input { width: auto; flex: 0 0 auto; }
+  .checkbox label { margin: 0; font-weight: 500; cursor: pointer; flex: 1; }
+  .hint { color: var(--muted); font-size: 12px; margin-top: 0.25rem; }
+  button {
+    padding: 0.7rem 1.1rem; font: inherit; font-weight: 600;
+    background: var(--accent); color: white; border: none;
+    border-radius: 8px; cursor: pointer;
+  }
+  button:hover { background: var(--accent-2); }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+  button.ghost {
+    background: transparent; color: var(--fg); border: 1px solid var(--border);
+  }
+  button.ghost:hover { background: var(--panel-2); }
+  button.launch {
+    background: var(--ok); width: 100%; padding: 0.9rem; font-size: 15px;
+    margin-top: 0.5rem;
+  }
+  button.launch:hover { background: #449b6e; }
+  .btn-row { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
+  .status {
+    margin-top: 0.5rem; padding: 0.5rem 0.7rem; border-radius: 6px;
+    font: 12px ui-monospace, Menlo, monospace; white-space: pre-wrap;
+    background: var(--panel-2); border: 1px solid var(--border);
+    color: var(--muted); min-height: 18px;
+  }
+  .status.ok  { color: var(--ok); border-color: var(--ok); }
+  .status.err { color: var(--err); border-color: var(--err); }
+  .status.warn { color: var(--warn); border-color: var(--warn); }
+  .pill {
+    display: inline-block; padding: 2px 8px; border-radius: 999px;
+    font-size: 11px; font-weight: 600; margin-right: 4px;
+  }
+  .pill.ok  { background: rgba(87, 192, 138, 0.15); color: var(--ok); }
+  .pill.err { background: rgba(226, 100, 100, 0.15); color: var(--err); }
+  .pill.muted { background: rgba(138, 147, 166, 0.15); color: var(--muted); }
+  details summary { cursor: pointer; color: var(--muted); font-size: 12px; }
+  details[open] summary { color: var(--fg); }
+  pre.cmd {
+    background: #0a0d12; border: 1px solid var(--border); border-radius: 8px;
+    padding: 0.7rem; font: 12px ui-monospace, Menlo, monospace;
+    color: var(--fg); overflow-x: auto; margin: 0.5rem 0 0;
+  }
+  .pose { display: grid; gap: 0.6rem; }
+  .pose-row label {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin: 0 0 0.25rem;
+  }
+  .pose-val { font: 12px ui-monospace, Menlo, monospace; color: var(--accent); }
+  .pose-control {
+    display: grid; grid-template-columns: auto 1fr auto; gap: 0.5rem;
+    align-items: center;
+  }
+  .pose-control input[type="range"] { width: 100%; accent-color: var(--accent); }
+  .pose-control button.nudge { padding: 0.35rem 0.7rem; font-size: 14px; min-width: 36px; }
+  .obj-row {
+    display: grid; grid-template-columns: 1fr auto auto; gap: 0.75rem;
+    align-items: baseline; padding: 0.45rem 0.7rem; margin-top: 0.4rem;
+    background: var(--panel-2); border: 1px solid var(--border); border-radius: 8px;
+  }
+  .obj-name { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .obj-dist { font: 13px ui-monospace, Menlo, monospace; color: var(--accent); }
+  .obj-meta { font-size: 12px; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>dimos_scanner</h1>
+<p class="lede">Configure the camera-streaming app that feeds the station-side
+dimOS pipeline.</p>
+
+<!-- ============================ BRIDGE ============================== -->
+<div class="card">
+  <h2>Bridge connection</h2>
+  <label>Station bridge host</label>
+  <input id="host" placeholder="e.g. <station-ip>">
+  <div class="hint">LAN IP of your station (the Mac or DGX running the bridge
+    from <code>station/</code>). Find it with <code>ipconfig getifaddr en0</code>
+    on macOS or <code>hostname -I</code> on Linux. Changing this reconnects the
+    WS in the background.</div>
+  <div class="row">
+    <div>
+      <label>Port</label>
+      <input id="port" type="number" value="9876">
+    </div>
+    <div>
+      <label>JPEG quality</label>
+      <input id="quality" type="number" min="10" max="95" value="80">
+    </div>
+    <div>
+      <label>Frame rate (Hz)</label>
+      <input id="hz" type="number" step="0.5" min="0.5" max="30" value="5">
+    </div>
+    <div>
+      <label>Pose rate (Hz)</label>
+      <input id="pose-hz" type="number" step="1" min="0" max="50" value="20">
+    </div>
+  </div>
+
+  <div class="checkbox" style="margin-top:0.75rem">
+    <input id="imu-enabled" type="checkbox" checked>
+    <label for="imu-enabled">Stream IMU (wireless only)
+      <span class="hint" style="display:block">Accel + gyro + orientation + temperature. Pause/resume is live (no reconnect); changing the rate reconnects.</span>
+    </label>
+  </div>
+  <div class="row">
+    <div>
+      <label>IMU rate (Hz)</label>
+      <input id="imu-hz" type="number" step="5" min="5" max="200" value="50">
+    </div>
+    <div></div><div></div>
+  </div>
+</div>
+
+<!-- ============================ ROBOT POSE ========================= -->
+<div class="card">
+  <h2>Robot pose</h2>
+  <p class="hint" style="margin-top:0">Move the head and base. Sliders command
+    absolute angles in degrees; arrow buttons nudge.</p>
+
+  <div class="pose">
+    <div class="pose-row">
+      <label for="head-yaw">Head yaw <span class="pose-val" id="head-yaw-val">0°</span></label>
+      <div class="pose-control">
+        <button class="ghost nudge" data-pose="head-yaw" data-delta="-5">←</button>
+        <input id="head-yaw" type="range" step="1" value="0">
+        <button class="ghost nudge" data-pose="head-yaw" data-delta="5">→</button>
+      </div>
+    </div>
+
+    <div class="pose-row">
+      <label for="head-pitch">Head pitch <span class="pose-val" id="head-pitch-val">0°</span></label>
+      <div class="pose-control">
+        <button class="ghost nudge" data-pose="head-pitch" data-delta="-5">↑</button>
+        <input id="head-pitch" type="range" step="1" value="0">
+        <button class="ghost nudge" data-pose="head-pitch" data-delta="5">↓</button>
+      </div>
+    </div>
+
+    <div class="pose-row">
+      <label for="body-yaw">Body yaw <span class="pose-val" id="body-yaw-val">0°</span></label>
+      <div class="pose-control">
+        <button class="ghost nudge" data-pose="body-yaw" data-delta="-10">←</button>
+        <input id="body-yaw" type="range" step="1" value="0">
+        <button class="ghost nudge" data-pose="body-yaw" data-delta="10">→</button>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button id="pose-home" class="ghost">Home</button>
+    </div>
+    <div id="pose-status" class="status"></div>
+  </div>
+</div>
+
+<!-- ============================ OBJECTS ============================ -->
+<div class="card">
+  <h2>Detected objects</h2>
+  <p class="hint" style="margin-top:0">Live from the station pipeline — needs
+    detection enabled and a running session. Distance is measured from the
+    robot's camera; nearest first.</p>
+  <div id="objects-status" class="status">waiting for pipeline…</div>
+  <div id="objects-list"></div>
+</div>
+
+<!-- RELOCALIZE: the original full stack had a "Relocalize" card here that
+     asked the station to re-align a moved robot to a saved map. It needs a
+     station-side relocalization feature that this repo does not ship, so the
+     card is removed. The backend endpoints (/api/relocalize,
+     /api/relocalize/status) remain in main.py for stations that implement
+     the relocalize_request / relocalize_status messages. -->
+
+<!-- ============================ PIPELINE ============================ -->
+<div class="card">
+  <h2>Pipeline (station-side dimOS)</h2>
+  <p class="hint" style="margin-top:0">Saved here as a single source of truth;
+    start the station pipeline with matching flags. Only the depth model is
+    sent to the station (in the WS hello).</p>
+
+  <div class="row">
+    <div>
+      <label>Depth model</label>
+      <select id="depth-model"></select>
+    </div>
+    <div>
+      <label>Pose</label>
+      <select id="pose"></select>
+    </div>
+    <div>
+      <label>Device</label>
+      <select id="device"></select>
+    </div>
+  </div>
+
+  <div class="row">
+    <div>
+      <label>Display width</label>
+      <input id="display-width" type="number" min="256" max="1920" value="768">
+    </div>
+    <div>
+      <label>Max FPS</label>
+      <input id="max-fps" type="number" step="0.5" min="0.5" max="30" value="2">
+    </div>
+  </div>
+
+  <div class="checkbox">
+    <input id="enable-clip" type="checkbox">
+    <label for="enable-clip">CLIP spatial memory
+      <span class="hint" style="display:block">Embed frames into ChromaDB for text/image queries.</span>
+    </label>
+  </div>
+
+  <div class="checkbox">
+    <input id="save-map" type="checkbox" checked>
+    <label for="save-map">Save voxel map on exit
+      <span class="hint" style="display:block">Bundles map + object DB (and keyframes with depth) to ~/.dimos/sessions/reachy_&lt;timestamp&gt;.pkl.</span>
+    </label>
+  </div>
+
+  <div class="checkbox">
+    <input id="no-detect" type="checkbox">
+    <label for="no-detect">Disable YOLOE detection
+      <span class="hint" style="display:block">Skip 2D detection + 3D ObjectDB (faster, no /annotations or /object_clouds).</span>
+    </label>
+  </div>
+
+  <div class="btn-row">
+    <button id="save-btn" class="ghost">Save config</button>
+  </div>
+  <div id="save-status" class="status"></div>
+</div>
+
+<!-- LAUNCHER: the original full stack had a "Launch on Mac" card here that
+     POSTed this config to a station-side launcher daemon which opened the
+     pipeline in Terminal windows. That daemon is not part of this repo, so
+     the card and its JS are removed; start the station by hand (see
+     station/). -->
+
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+
+async function api(method, path, body) {
+  const res = await fetch(path, {
+    method,
+    headers: body ? { "Content-Type": "application/json" } : {},
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  let payload = null;
+  try { payload = await res.json(); } catch (e) { /* no JSON */ }
+  if (!res.ok) {
+    const msg = (payload && (payload.detail || payload.error)) || `HTTP ${res.status}`;
+    throw new Error(`${method} ${path}: ${msg}`);
+  }
+  return payload;
+}
+
+let CONFIG = {};
+
+function fillSelect(sel, options, current) {
+  sel.innerHTML = "";
+  for (const opt of options) {
+    const o = document.createElement("option");
+    o.value = opt; o.textContent = opt;
+    if (opt === current) o.selected = true;
+    sel.appendChild(o);
+  }
+}
+
+function buildBody() {
+  return {
+    host:               $("host").value.trim(),
+    port:               Number($("port").value),
+    jpeg_quality:       Number($("quality").value),
+    frame_hz:           Number($("hz").value),
+    pose_hz:            Number($("pose-hz").value),
+    imu_enabled:        $("imu-enabled").checked,
+    imu_hz:             Number($("imu-hz").value),
+    depth_model:        $("depth-model").value,
+    pose:               $("pose").value,
+    device:             $("device").value,
+    display_width:      Number($("display-width").value),
+    max_fps:            Number($("max-fps").value),
+    enable_clip_memory: $("enable-clip").checked,
+    save_map:           $("save-map").checked,
+    no_detect:          $("no-detect").checked,
+  };
+}
+
+async function load() {
+  try {
+    const [cfgRes, choicesRes] = await Promise.all([
+      fetch("/config"),
+      fetch("/config/choices"),
+    ]);
+    if (!cfgRes.ok) throw new Error("GET /config: HTTP " + cfgRes.status);
+    const c = await cfgRes.json();
+    const choices = choicesRes.ok ? await choicesRes.json() : {
+      depth_model: ["da3-small","da3-base","da3-large","da3metric-large","depthpro"],
+      pose: ["vo","identity"],
+      device: ["mps","cuda","cpu"],
+    };
+    CONFIG = c;
+
+    $("host").value         = c.host || "";
+    $("port").value         = c.port;
+    $("quality").value      = c.jpeg_quality;
+    $("hz").value           = c.frame_hz;
+    $("pose-hz").value      = c.pose_hz ?? 20;
+    $("imu-hz").value       = c.imu_hz ?? 50;
+    $("imu-enabled").checked = c.imu_enabled !== false;
+    $("display-width").value = c.display_width;
+    $("max-fps").value      = c.max_fps;
+    $("enable-clip").checked = !!c.enable_clip_memory;
+    $("save-map").checked   = !!c.save_map;
+    $("no-detect").checked  = !!c.no_detect;
+
+    fillSelect($("depth-model"), choices.depth_model, c.depth_model);
+    fillSelect($("pose"),        choices.pose,        c.pose);
+    fillSelect($("device"),      choices.device,      c.device);
+
+  } catch (e) {
+    const s = $("save-status");
+    s.textContent = "load failed: " + e;
+    s.className = "status err";
+  }
+}
+
+async function save() {
+  const s = $("save-status");
+  s.textContent = "saving...";
+  s.className = "status";
+  try {
+    const r = await fetch("/config", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(buildBody()),
+    });
+    const j = await r.json();
+    if (r.ok && j.ok) {
+      s.textContent = "saved ✓  bridge host=" + j.config.host + " depth=" + j.config.depth_model;
+      s.className = "status ok";
+      CONFIG = j.config;
+    } else {
+      s.textContent = "save failed: " + (j.error || ("HTTP " + r.status));
+      s.className = "status err";
+    }
+  } catch (e) {
+    s.textContent = "save failed: " + e;
+    s.className = "status err";
+  }
+}
+
+$("save-btn").addEventListener("click", save);
+
+// ---- robot pose controls -------------------------------------------------
+// Each axis throttles "latest wins": one request in flight + at most one
+// pending value, so dragging a slider doesn't fire dozens of POSTs/sec.
+const POSE = {
+  "head-yaw":   { url: "/api/head_pose", field: "yaw",   limit: 35,  current: 0 },
+  "head-pitch": { url: "/api/head_pose", field: "pitch", limit: 25,  current: 0 },
+  "body-yaw":   { url: "/api/body_yaw",  field: "yaw",   limit: 90,  current: 0 },
+};
+const poseInflight = {};
+const posePending = {};
+
+async function sendPose(key) {
+  if (poseInflight[key]) return;
+  const p = POSE[key];
+  // Head yaw + pitch share an endpoint — always send both so a pitch nudge
+  // doesn't blank out the current yaw.
+  let body;
+  if (p.url === "/api/head_pose") {
+    body = { yaw: POSE["head-yaw"].current, pitch: POSE["head-pitch"].current };
+  } else {
+    body = { [p.field]: p.current };
+  }
+  const status = $("pose-status");
+  poseInflight[key] = api("POST", p.url, body)
+    .then(() => {
+      status.textContent = `head ${POSE["head-yaw"].current.toFixed(0)}°/${POSE["head-pitch"].current.toFixed(0)}°  body ${POSE["body-yaw"].current.toFixed(0)}°`;
+      status.className = "status ok";
+    })
+    .catch(err => { status.textContent = err.message; status.className = "status err"; })
+    .finally(() => {
+      poseInflight[key] = null;
+      if (posePending[key] !== undefined) {
+        const next = posePending[key];
+        delete posePending[key];
+        if (next !== p.current) { p.current = next; sendPose(key); }
+      }
+    });
+}
+
+function setPose(key, value) {
+  const p = POSE[key];
+  value = Math.max(-p.limit, Math.min(p.limit, value));
+  $(key).value = value;
+  $(`${key}-val`).textContent = `${value.toFixed(0)}°`;
+  if (poseInflight[key]) {
+    posePending[key] = value;
+  } else {
+    p.current = value;
+    sendPose(key);
+  }
+}
+
+function nudgePose(key, delta) {
+  setPose(key, (POSE[key].current) + Number(delta));
+}
+
+function wirePoseControls() {
+  for (const key of Object.keys(POSE)) {
+    const slider = $(key);
+    slider.min = -POSE[key].limit;
+    slider.max = POSE[key].limit;
+    slider.addEventListener("input",  () => setPose(key, Number(slider.value)));
+    slider.addEventListener("change", () => setPose(key, Number(slider.value)));
+  }
+  document.querySelectorAll("button.nudge").forEach(btn => {
+    btn.addEventListener("click", () => nudgePose(btn.dataset.pose, btn.dataset.delta));
+  });
+  $("pose-home").addEventListener("click", async () => {
+    const s = $("pose-status");
+    s.textContent = "going home..."; s.className = "status";
+    try {
+      await api("POST", "/api/home", {});
+      for (const key of Object.keys(POSE)) {
+        POSE[key].current = 0;
+        $(key).value = 0;
+        $(`${key}-val`).textContent = "0°";
+      }
+      s.textContent = "home ✓"; s.className = "status ok";
+    } catch (e) {
+      s.textContent = e.message; s.className = "status err";
+    }
+  });
+}
+
+async function fetchPoseLimits() {
+  try {
+    const lim = await api("GET", "/api/pose_limits");
+    if (lim.head_yaw)   POSE["head-yaw"].limit   = lim.head_yaw;
+    if (lim.head_pitch) POSE["head-pitch"].limit = lim.head_pitch;
+    if (lim.body_yaw)   POSE["body-yaw"].limit   = lim.body_yaw;
+    for (const key of Object.keys(POSE)) {
+      const s = $(key);
+      s.min = -POSE[key].limit;
+      s.max = POSE[key].limit;
+    }
+  } catch (e) { /* keep client-side defaults */ }
+}
+
+// ---- detected objects (polled) ------------------------------------------
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => (
+    {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]
+  ));
+}
+
+async function refreshObjects() {
+  const status = $("objects-status");
+  const list = $("objects-list");
+  try {
+    const r = await fetch("/api/objects");
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    const j = await r.json();
+    const objs = Array.isArray(j.objects) ? j.objects.slice() : [];
+    objs.sort((a, b) => (a.distance_m ?? 1e9) - (b.distance_m ?? 1e9));
+
+    if (!j.connected) {
+      status.textContent = "bridge not connected — start the station bridge and set its host above";
+      status.className = "status warn";
+    } else if (objs.length === 0) {
+      status.textContent = "connected — no objects detected yet";
+      status.className = "status";
+    } else {
+      const age = (j.age_s == null) ? "" : `  ·  updated ${Number(j.age_s).toFixed(1)}s ago`;
+      status.textContent = `${objs.length} object${objs.length > 1 ? "s" : ""}${age}`;
+      status.className = "status ok";
+    }
+
+    list.innerHTML = objs.map(o => `
+      <div class="obj-row">
+        <span class="obj-name">${escapeHtml(o.name ?? "object")}</span>
+        <span class="obj-dist">${Number(o.distance_m).toFixed(2)} m</span>
+        <span class="obj-meta">×${o.detections ?? 0}</span>
+      </div>`).join("");
+  } catch (e) {
+    status.textContent = "objects unavailable: " + e.message;
+    status.className = "status err";
+  }
+}
+
+load();
+wirePoseControls();
+fetchPoseLimits();
+refreshObjects();
+setInterval(refreshObjects, 1000);
+</script>
+</body>
+</html>

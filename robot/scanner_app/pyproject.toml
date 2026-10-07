@@ -1,0 +1,68 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+# Distribution name MUST use the underscore form so it matches the on-disk
+# Python package directory (``src/dimos_scanner/``). The Reachy Mini SDK
+# extracts ``custom_app_url`` by reading
+# ``site_packages/<app_name>/main.py`` *with the literal distribution name*
+# (see ``reachy_mini.apps.sources.local_common_venv:_get_custom_app_url_from_file``).
+# A hyphenated distribution silently breaks this lookup — the daemon then
+# reports ``custom_app_url: None`` and the Reachy desktop app has nothing
+# to embed for this app.
+name = "dimos_scanner"
+version = "0.1.0"
+description = "Reachy Mini app — stream camera frames to a dimOS station bridge and apply scanning motion commands."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+dependencies = [
+    "numpy>=1.26",
+    "scipy>=1.11",
+    "websockets>=12.0",
+    "opencv-python>=4.9",
+]
+# The Reachy Mini app store reads this keyword to surface the app on the
+# dashboard. Don't remove.
+keywords = ["reachy-mini-app"]
+
+[project.optional-dependencies]
+# Heavyweight SDK + motor controller. Always present on the robot itself; only
+# needed locally if you want to run the full app loop against a simulator/
+# network daemon from your laptop.
+robot = ["reachy-mini>=1.7"]
+
+# Pydantic is only needed for the settings page (config validation). Kept
+# behind an extra because pydantic v2 has a non-trivial install footprint and
+# small headless deployments may skip the settings UI.
+settings = ["pydantic>=2.0"]
+
+dev = ["pytest>=8.0"]
+
+# Convenience meta-extra.
+all = ["reachy-mini>=1.7", "pydantic>=2.0"]
+
+[project.scripts]
+# Local CLI: `dimos-scanner run` invokes the app loop; `dimos-scanner check`
+# validates the config + bridge reachability without driving any motors.
+dimos-scanner = "dimos_scanner.cli:main"
+
+[project.entry-points."reachy_mini_apps"]
+# Entry-point key matches the (underscored) distribution name above and the
+# Python package directory under ``src/``. Keep them aligned — see the note
+# on the ``name`` field for why hyphens silently break ``custom_app_url``
+# discovery in the Reachy desktop app.
+"dimos_scanner" = "dimos_scanner.main:DimosScanner"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-dir]
+"" = "src"
+
+[tool.setuptools.package-data]
+dimos_scanner = ["static/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

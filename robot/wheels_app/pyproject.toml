@@ -1,0 +1,53 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+
+[project]
+name = "reachy_wheels_app"
+version = "0.9.1"
+description = "Reachy Mini app: drive the Wheels mecanum chassis by web D-pad, by talking to Reachy (Gemini Live audio+video), or by visually tracking and following a named person or object."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "reachy-mini",
+    # The wheels client (reachy_wheels_app/wheels_client.py) is stdlib-only,
+    # so it can also be copied verbatim into other tools that drive the base.
+    # Voice mode (Gemini Live) — numpy/scipy/Pillow are already in the
+    # robot's shared apps venv via other apps:
+    "google-genai>=1.0",
+    "numpy>=1.24",
+    "pillow>=10",
+    # Visual following: the on-robot detector backend + frame handling.
+    "onnxruntime>=1.16",
+    "opencv-python>=4.8",
+]
+keywords = ["reachy-mini-app", "mecanum", "wheels", "teleop", "gemini-live", "voice", "tracking", "object-detection"]
+
+[project.optional-dependencies]
+# Roboflow trackers (SORT/ByteTrack/OC-SORT) for stable target ids. Kept out
+# of the base deps ON PURPOSE: it requires numpy>=2, and the robot's apps
+# venv is SHARED with every other installed app (several of which pin
+# numpy 1.x). Installing this is a deliberate act, not a side effect of
+# deploying. Without it the app runs a greedy-IoU fallback tracker and says
+# so in the UI, so following still works — just less robustly through
+# occlusion. Install with:
+#   /venvs/apps_venv/bin/pip install "reachy_wheels_app[tracking]"
+tracking = [
+    "trackers>=2.0",
+    "supervision>=0.26",
+]
+
+[project.entry-points."reachy_mini_apps"]
+reachy_wheels_app = "reachy_wheels_app.main:ReachyWheelsApp"
+
+[tool.setuptools]
+package-dir = { "" = "." }
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["reachy_wheels_app*"]
+
+[tool.setuptools.package-data]
+reachy_wheels_app = ["**/*"] # Also include all non-.py files (static UI)

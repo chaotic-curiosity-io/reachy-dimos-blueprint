@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  <title>Reachy Wheels</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <main class="wrap">
+    <header>
+      <h1>Reachy Wheels</h1>
+      <div id="status" class="pill offline">connecting…</div>
+    </header>
+
+    <details class="lab sensors" open>
+      <summary>DimOS sensors</summary>
+      <div class="lab-body">
+        <p id="sensor-state" role="status">Checking L515 depth source…</p>
+        <label>Pi depth service <input id="depth-url" type="url" placeholder="http://<pi-ip>:8765"></label>
+        <button id="depth-save" type="button">Save source</button>
+        <p><a href="/api/camera" target="_blank">Reachy RGB camera</a> ·
+          <a id="depth-viewer" target="_blank" rel="noopener">L515 point-cloud viewer</a></p>
+        <p class="hint">Sensor bring-up. DimOS autonomous driving is disabled while base localization,
+          mounting calibration, and wheel velocity calibration are incomplete.
+          RGB and depth are separate camera views.</p>
+      </div>
+    </details>
+
+    <section class="pad" aria-label="drive pad">
+      <button class="drive" data-cmd="diagonal_fl">⬉</button>
+      <button class="drive" data-cmd="forward">▲</button>
+      <button class="drive" data-cmd="diagonal_fr">⬈</button>
+
+      <button class="drive" data-cmd="strafe_left">◀</button>
+      <button id="stop" class="stop">STOP</button>
+      <button class="drive" data-cmd="strafe_right">▶</button>
+
+      <button class="drive" data-cmd="diagonal_rl">⬋</button>
+      <button class="drive" data-cmd="reverse">▼</button>
+      <button class="drive" data-cmd="diagonal_rr">⬊</button>
+    </section>
+
+    <section class="rotate-row">
+      <button class="drive rotate" data-cmd="rotate_ccw">⟲ rotate</button>
+      <button class="drive rotate" data-cmd="rotate_cw">rotate ⟳</button>
+    </section>
+
+    <section class="speed-row">
+      <label for="speed">speed <span id="speed-val">0.8</span></label>
+      <input id="speed" type="range" min="0.2" max="1.0" step="0.05" value="0.8">
+    </section>
+
+    <section class="telemetry">
+      <div id="wheels" class="wheels-grid"></div>
+      <div id="deadman" class="deadman"></div>
+    </section>
+
+    <details class="lab" open>
+      <summary>🔧 wheel lab — drive the corners by hand</summary>
+
+      <div class="lab-body">
+        <div class="lab-front">front ▲</div>
+        <div id="wheel-grid" class="wheel-grid"></div>
+
+        <div class="lab-row">
+          <label for="lab-speed">speed <b id="lab-speed-val">0.80</b></label>
+          <input id="lab-speed" type="range" min="0.2" max="1.0" step="0.05" value="0.8">
+        </div>
+        <div class="lab-row">
+          <label for="lab-duration">pulse <b id="lab-duration-val">1.0</b>&nbsp;s</label>
+          <input id="lab-duration" type="range" min="0.2" max="5" step="0.1" value="1">
+        </div>
+
+        <div class="lab-actions">
+          <button id="lab-hold" class="lab-go">HOLD</button>
+          <button id="lab-pulse" class="lab-go">PULSE</button>
+          <button id="lab-mirror">↔ mirror</button>
+          <button id="lab-zero">zero</button>
+          <button id="lab-stop" class="halt">STOP</button>
+        </div>
+
+        <div id="lab-presets" class="lab-presets"></div>
+        <div id="lab-note" class="hint"></div>
+
+        <div class="lab-summary">
+          <code id="lab-mix-line">—</code>
+          <button id="lab-copy">copy</button>
+        </div>
+
+        <details class="lab-trim">
+          <summary>per-wheel trim &amp; polarity (live on the board)</summary>
+          <div id="trim-grid" class="trim-grid"></div>
+          <div class="lab-actions">
+            <button id="trim-apply">re-apply after a board reset</button>
+          </div>
+          <p class="hint">Trim scales one wheel's output; a rotate that
+            curves usually means two corners are not turning at the same
+            rate. The board forgets these on reset — this app remembers
+            them, but only the chassis's own <code>pins.py</code> makes them
+            permanent. Paste this in when you find a set that works:</p>
+          <pre id="pins-snippet" class="snippet"></pre>
+        </details>
+
+        <p class="hint">Rotating in place is what mecanum wheels are worst
+          at: all four rollers scrub sideways at once, so the lightest
+          corner slips first and the pivot walks. Try the presets, watch
+          which one actually spins about its own centre, and note the mix
+          line — that is what gets baked into the firmware's rotate
+          primitives.</p>
+      </div>
+    </details>
+
+    <section class="mount">
+      <div class="mount-head">
+        <span>🔗 mount</span>
+        <span id="mount-status" class="pill offline">…</span>
+      </div>
+      <div class="mount-viz">
+        <div id="mount-figure" class="mount-figure" data-state="unknown">
+          <div class="m-robot">🤖</div>
+          <div class="m-gap"><span id="mount-gap-label"></span></div>
+          <div class="m-wheels">🛞</div>
+        </div>
+        <div class="mount-meter">
+          <div class="mount-scale">
+            <div id="mount-band-off" class="band off"></div>
+            <div id="mount-band-on" class="band on"></div>
+            <div id="mount-thresh" class="thresh"></div>
+            <div id="mount-needle" class="needle"></div>
+          </div>
+          <div id="mount-detail" class="mount-detail"></div>
+        </div>
+      </div>
+      <div class="mount-cal">
+        <button id="cal-on">calibrate: on wheels</button>
+        <button id="cal-off">calibrate: off wheels</button>
+      </div>
+      <p class="hint">Reachy has no switch for this — it listens to the
+        chassis's WiFi ranging beacon and judges by how loud it is. Both
+        baselines are <em>measured</em>: put the robot on the wheels and hit
+        the first button, lift it off and hit the second.</p>
+    </section>
+
+    <section class="track">
+      <div class="track-head">
+        <span>🎯 follow</span>
+        <span id="track-status" class="pill offline">idle</span>
+      </div>
+      <img id="track-preview" class="track-preview" alt="tracker view" hidden>
+      <div class="settings-row">
+        <input id="track-target" type="text" list="track-classes"
+               placeholder="person" autocomplete="off" autocapitalize="off">
+        <button id="track-go">follow</button>
+        <button id="track-halt" class="halt">stop</button>
+      </div>
+      <datalist id="track-classes"></datalist>
+      <div class="track-chips">
+        <button class="chip" data-target="person">me</button>
+        <button class="chip" data-target="dog">dog</button>
+        <button class="chip" data-target="cat">cat</button>
+        <button class="chip" data-target="sports ball">ball</button>
+        <button class="chip" data-target="cup">cup</button>
+      </div>
+      <div id="track-detail" class="track-detail"></div>
+      <p class="hint">Locks onto one tracked object and keeps the head, body
+        and wheels on it until you stop it. STOP, the space bar, and saying
+        “stop” all end it.</p>
+    </section>
+
+    <section class="voice">
+      <div class="voice-head">
+        <span>🎙 voice</span>
+        <span id="voice-status" class="pill offline">off</span>
+      </div>
+      <div id="transcript" class="transcript"></div>
+      <div id="voice-key-row" class="settings-row" hidden>
+        <input id="gemini-key" type="password" placeholder="Gemini API key"
+               autocomplete="off">
+        <button id="save-key">set key</button>
+      </div>
+      <p class="hint">Talk to Reachy: “what’s around you?”, “look left”,
+        “turn to face me”, “come here”, “follow the cat”, “stop”. It moves in
+        tiers — glances with its head, rotates its body, and only rolls the
+        wheels to actually travel. Voice drives are capped at 4&nbsp;s per
+        command.</p>
+    </section>
+
+    <details class="settings">
+      <summary>chassis settings</summary>
+      <div class="settings-row">
+        <input id="host" type="text" placeholder="<wheels-ip> (ESP32 chassis)" autocomplete="off">
+        <button id="save-host">set host</button>
+      </div>
+      <div class="settings-row">
+        <select id="track-detector">
+          <option value="onnx">follow: on-robot ONNX (COCO)</option>
+          <option value="remote">follow: remote detector (any object)</option>
+        </select>
+        <button id="save-detector">set</button>
+      </div>
+      <div class="settings-row">
+        <input id="track-remote-url" type="text" autocomplete="off"
+               placeholder="http://<station-ip>:8055/detect (remote only)">
+        <button id="save-remote-url">set</button>
+      </div>
+      <p class="hint">Hold a pad button (or W/A/S/D · Q/E rotate · arrows ·
+        space = stop). The chassis stops itself 2&nbsp;s after the last
+        command — releasing always stops.</p>
+    </details>
+  </main>
+  <script src="/static/main.js"></script>
+</body>
+</html>
