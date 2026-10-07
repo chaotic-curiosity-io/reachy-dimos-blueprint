@@ -71,7 +71,17 @@ and agentic control.
 
 ## dimOS building the map, live
 
-The same Rerun layout at three points in one drive around a room:
+<p align="center">
+  <img src="docs/media/dimos-scan-timelapse.gif" width="698" alt="Timelapse: on the left, the Reachy's head-pose model turning; on the right, the dimOS spatial map filling in from a few sparse surfaces to a dense, labelled room with chairs, cabinets, lamps, a laptop and a houseplant">
+</p>
+
+The robot stays in one place and only turns its head. Each head-camera frame
+goes to the Mac with the head's exact pose at that instant; the Mac estimates
+metric depth with DepthPro, and dimOS fuses the result into a labelled 3D map.
+That's about four minutes of scanning at roughly 20× speed, shown in Foxglove
+(`--viz rerun` renders the same map in Rerun).
+
+The RGB-D path in Rerun, at three points in one drive around a room:
 
 | Early in the scan | Clusters forming | Room mostly covered |
 | --- | --- | --- |
