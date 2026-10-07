@@ -52,9 +52,16 @@ and agentic control.
 
 Want one? Start here:
 
-- **[hardware/BOM.md](hardware/BOM.md)** — the full bill of materials. Every
-  part is commercial off-the-shelf; the priciest non-robot item is a
-  discontinued LiDAR camera bought used.
+- **[hardware/BOM.md](hardware/BOM.md)** — the full bill of materials with
+  purchase links. At a glance:
+  - the robot: a **Reachy Mini**
+  - the base: a **LewanSoul mecanum chassis kit** (frame, 4 TT motors,
+    66 mm mecanum wheels), an **ESP32** dev board, two **L298N** motor
+    drivers, a **2S 7.4 V LiPo**, JST pigtails
+  - the depth add-on: an **Intel RealSense L515** (discontinued — buy used)
+    on a **Raspberry Pi 3B+**
+  - the station: any Mac or Linux box that can run DepthPro (we used an
+    Apple-silicon Mac and an NVIDIA DGX Spark)
 - **[hardware/ASSEMBLY.md](hardware/ASSEMBLY.md)** — the build guide, in the
   order that works: bench the wheel base alone, mount the Reachy, add the
   depth sensor, calibrate, then drive and scan. Wiring diagram and safety
@@ -107,7 +114,10 @@ python -m realsense_viewer.server --synthetic --host 127.0.0.1
 
 **2. Offline replay — the dimOS pipeline with no robot.** Feed a recording
 (`camera.mp4` + `camera_timestamps.jsonl` + `head_pose.jsonl`) to the station
-server as a fake robot:
+server as a fake robot. No sample recording ships with the repo (ours are of
+a private home); the layout is documented in
+[station/README.md](station/README.md#b-offline-replay-no-robot), and any tool
+that writes it works:
 
 ```bash
 python -m station.dimos_bridge.server --dimos-dir "$DIMOS_DIR" \
@@ -151,6 +161,7 @@ robot/
   wheels_app/      Reachy Mini app: drive the base — D-pad, person following, voice
 station/
   dimos_bridge/    WebSocket bridge + the dimOS fork pipeline (mono path)
+  vendor/          xr_nav mapping modules the fork's pipeline imports (vendored)
   l515/            RGB-D mapping, perception, dry-run navigation (depth path)
   assets/          Pollen Robotics' official Reachy Mini MJCF model
 perception/
@@ -162,6 +173,10 @@ hardware/          bill of materials + assembly guide
 docs/              diagrams and demo media
 scripts/           deploy.sh (apps → robot/sim) · scan.sh (one-command mono scan)
 ```
+
+## Authors
+
+Built by **Alireza Bahremand** and **Don Balanzat**.
 
 ## Credits
 
