@@ -72,14 +72,19 @@ and agentic control.
 ## dimOS building the map, live
 
 <p align="center">
-  <img src="docs/media/dimos-scan-timelapse.gif" width="698" alt="Timelapse: on the left, the Reachy's head-pose model turning; on the right, the dimOS spatial map filling in from a few sparse surfaces to a dense, labelled room with chairs, cabinets, lamps, a laptop and a houseplant">
+  <img src="docs/media/dimos-scan-mono.gif" width="374" alt="Mono camera: the dimOS spatial map filling in from a few sparse surfaces to a dense, labelled room — chairs, cabinets, lamps, a laptop, a houseplant — while the robot stays in one place">
+  <img src="docs/media/reachy-drive-depth.gif" width="312" alt="Depth sensor: the live L515 point cloud on top, and below it the robot driving itself across a wood floor between the legs of a dining table">
 </p>
 
-The robot stays in one place and only turns its head. Each head-camera frame
-goes to the Mac with the head's exact pose at that instant; the Mac estimates
-metric depth with DepthPro, and dimOS fuses the result into a labelled 3D map.
-That's about four minutes of scanning at roughly 20× speed, shown in Foxglove
-(`--viz rerun` renders the same map in Rerun).
+**Left — mono camera, the robot stays put.** It only turns its head. Each
+head-camera frame reaches the Mac with the head's exact pose at that instant;
+the Mac estimates metric depth with DepthPro, and dimOS fuses the result into
+a labelled 3D map. About four minutes of scanning at roughly 20× speed.
+
+**Right — depth sensor, the robot drives itself.** With the L515 streaming
+measured point clouds and the wheels under it, the Reachy follows a person
+between the table legs. dimOS's own path planner runs on that depth too, in
+dry-run mode for now (see [Quick start](#quick-start)).
 
 The RGB-D path in Rerun, at three points in one drive around a room:
 
