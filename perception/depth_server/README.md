@@ -152,15 +152,22 @@ only supplies the L515's own factory calibration and honest timestamps.
 
 ## On the Pi: librealsense compatibility
 
-This is the part that bites. **The L500 family (L515) needs librealsense
-2.48.0.** Intel discontinued the L515 and later librealsense releases removed
-the L500-family code. Some intermediate 2.5x builds still enumerate the camera,
-but results vary by build and firmware — one 2.54.x build we tried rejected the
-camera's 1.5.2.0 firmware during initialisation. 2.48.0 supports both the L515
-and that firmware, so pin it.
+This is the part that bites. Intel discontinued the L515, and librealsense
+dropped the L500-family code entirely in **v2.55.1** — every release from
+2.55 on cannot drive an L515 at all. The usable window ends at **v2.54.2**,
+and that's what our Pi runs:
 
-- **librealsense:** v2.48.0 from upstream,
-  <https://github.com/IntelRealSense/librealsense/tree/v2.48.0> — build it
+| Host | librealsense | Why |
+| --- | --- | --- |
+| **Raspberry Pi** (the deployed path) | **v2.54.2**, RSUSB backend | Last release that still carries the L500 code; works with firmware 1.5.2.0 on the Pi |
+| Mac (optional, for the RealSense Viewer) | v2.48.0 | The 2.54.2 *macOS* build rejected firmware 1.5.2.0 during initialisation; 2.48.0 accepts it |
+| anything | v2.55.1 or later | **Won't work** — L500 support removed |
+
+If 2.54.2 misbehaves on your Pi/firmware combination, v2.48.0 is the fallback
+that's known to accept 1.5.2.0; the build flags below are the same.
+
+- **librealsense:** v2.54.2 from upstream,
+  <https://github.com/IntelRealSense/librealsense/tree/v2.54.2> — build it
   yourself; it is not vendored here.
 - **Backend:** build with the **RSUSB** (userspace libusb) backend,
   `-DFORCE_RSUSB_BACKEND=ON`, which avoids kernel patches on Raspberry Pi OS.
@@ -175,22 +182,28 @@ and that firmware, so pin it.
   Viewer may nag you to update (it recommends 1.5.8.1); we never did. Don't
   accept a firmware flash casually — it needs stable power and the exact L515
   image, and changes which SDK versions accept the camera.
-- **USB:** use a USB 3 port (the blue ones on a Pi 4/5). The `--color` profile
-  (640×480 @ 6 Hz) is the one the L515 also supports over USB 2.
+- **USB:** we run on a Raspberry Pi 3 Model B+, whose ports are USB 2.0. The
+  server's default profile — depth at 640×480, published at up to 8 fps with
+  `--stride 2` — fits within that. A Pi 4 or 5 on a USB 3 port (the blue
+  ones) gives headroom for higher rates or `--color` alongside depth.
 
 A typical source build, abbreviated:
 
 ```bash
-git clone --branch v2.48.0 --depth 1 https://github.com/IntelRealSense/librealsense.git
+git clone --branch v2.54.2 --depth 1 https://github.com/IntelRealSense/librealsense.git
 cd librealsense && mkdir build && cd build
 cmake .. -DCMAKE_BUILD_TYPE=Release -DFORCE_RSUSB_BACKEND=ON \
          -DBUILD_PYTHON_BINDINGS=ON -DPYTHON_EXECUTABLE=$HOME/.venvs/realsense-l515-rsusb/bin/python \
          -DBUILD_EXAMPLES=OFF -DBUILD_GRAPHICAL_EXAMPLES=OFF \
          -DCMAKE_INSTALL_PREFIX=$HOME/.local/realsense-l515
-make -j"$(nproc)" && make install
+make -j2 && make install
 ```
 
-A 2021 release on a current compiler/Python can need small fixes; check the
+On a Pi 3B+ (1 GB RAM), keep `make` at `-j2` or lower and enable a swap file
+before building — a full-parallel C++ build of librealsense runs the board
+out of memory. Expect the build to take a long time; it's a one-off.
+
+An older release on a current compiler/Python can need small fixes; check the
 upstream issue tracker for your OS version. If you install into a private
 prefix like the one above, point `LD_LIBRARY_PATH` at its `lib/` (the service
 template does).
