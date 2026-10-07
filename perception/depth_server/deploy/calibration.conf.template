@@ -1,0 +1,10 @@
+# Optional drop-in that switches the service into paired depth+RGB
+# ("calibration") mode by adding --color. Install as
+#   /etc/systemd/system/realsense-viewer.service.d/calibration.conf
+# Remove it (then daemon-reload + restart) to go back to depth-only.
+#
+# The empty ExecStart= is required: it clears the base unit's command before
+# the replacement is set. Placeholders as in realsense-viewer.service.template.
+[Service]
+ExecStart=
+ExecStart={{HOME}}/.venvs/realsense-l515-rsusb/bin/python -m realsense_viewer.server --host 0.0.0.0 --port 8765 --stride 2 --max-fps 8 --color

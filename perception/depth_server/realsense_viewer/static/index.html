@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Reachy Depth</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <canvas id="viewer" aria-label="Interactive RealSense point cloud"></canvas>
+
+    <header class="topbar">
+      <div class="brand">
+        <span class="mark" aria-hidden="true"></span>
+        <div>
+          <h1>Reachy Depth</h1>
+          <p id="camera-name">Connecting to RealSense…</p>
+        </div>
+      </div>
+      <div class="live"><span id="live-dot"></span><span id="live-label">CONNECTING</span></div>
+    </header>
+
+    <aside class="panel" aria-label="Viewer controls">
+      <div class="metric-grid">
+        <div><span>POINTS</span><strong id="point-count">—</strong></div>
+        <div><span>STREAM</span><strong id="stream-fps">—</strong></div>
+        <div><span>DEPTH</span><strong id="depth-range">0.15–4.0 m</strong></div>
+        <div><span>LATENCY</span><strong id="latency">—</strong></div>
+      </div>
+
+      <label class="slider-row">
+        <span>Point size <output id="point-size-value">2.0</output></span>
+        <input id="point-size" type="range" min="1" max="6" value="2" step="0.25" />
+      </label>
+
+      <label class="check-row">
+        <input id="auto-rotate" type="checkbox" />
+        <span>Auto rotate</span>
+      </label>
+
+      <div class="actions">
+        <button id="reset-view" type="button">Reset view</button>
+        <button id="pause-stream" type="button">Pause</button>
+      </div>
+    </aside>
+
+    <div class="hint">Drag to orbit · Scroll to zoom · Double-click to reset</div>
+    <div id="message" role="status"></div>
+    <script src="/app.js"></script>
+  </body>
+</html>

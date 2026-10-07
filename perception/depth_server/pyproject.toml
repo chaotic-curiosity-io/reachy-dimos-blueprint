@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "realsense-browser-viewer"
+version = "0.1.0"
+description = "Lightweight browser point-cloud viewer for an Intel RealSense L515"
+requires-python = ">=3.9"
+dependencies = ["numpy>=1.21"]
+
+[project.scripts]
+realsense-browser-viewer = "realsense_viewer.server:main"
+
+[tool.setuptools.package-data]
+realsense_viewer = ["static/*"]

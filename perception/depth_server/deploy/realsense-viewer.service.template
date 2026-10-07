@@ -1,0 +1,26 @@
+# systemd unit for the depth server on a Raspberry Pi.
+#
+# Fill in the placeholders and install it (see README.md, "Run it as a service"):
+#   {{USER}}  the Pi account that owns the checkout and venv, e.g. pi
+#   {{HOME}}  that account's home directory, e.g. /home/pi
+#
+# Assumes the depth_server folder was copied to {{HOME}}/apps/realsense-viewer
+# and pyrealsense2 lives in the venv {{HOME}}/.venvs/realsense-l515-rsusb.
+[Unit]
+Description=Intel RealSense L515 depth server (pull-based point clouds over HTTP)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User={{USER}}
+WorkingDirectory={{HOME}}/apps/realsense-viewer
+# Only needed when librealsense was built from source into a private prefix
+# rather than installed system-wide; delete the line otherwise.
+Environment=LD_LIBRARY_PATH={{HOME}}/.local/realsense-l515/lib
+ExecStart={{HOME}}/.venvs/realsense-l515-rsusb/bin/python -m realsense_viewer.server --host 0.0.0.0 --port 8765 --stride 2 --max-fps 8
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
