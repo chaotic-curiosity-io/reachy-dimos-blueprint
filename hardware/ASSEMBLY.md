@@ -150,11 +150,13 @@ Bolt the Reachy Mini to the chassis plate. Two things to get right:
 ## 3. Attach the L515 and the Raspberry Pi
 
 Mount the Intel RealSense L515 on the Reachy's torso, facing forward, and
-connect it to the Raspberry Pi with a **USB 3** cable into a USB 3 port (the
-blue ones on a Pi 4/5). The Pi rides on the base and serves depth over HTTP.
+connect it to the Raspberry Pi over USB. We use a Pi 3 Model B+ (USB 2.0
+ports — enough for the default depth profile); a Pi 4/5 on a USB 3 port
+gives more headroom. The Pi rides on the base and serves depth over HTTP.
 
-Software on the Pi is its own saga — librealsense **must be pinned to
-v2.48.0** for the L515, built with the RSUSB backend and Python bindings.
+Software on the Pi is its own saga — librealsense **must be v2.54.2 or
+older** for the L515 (L500 support was removed in v2.55.1); we run v2.54.2,
+built with the RSUSB backend and Python bindings.
 Follow [perception/depth_server/README.md](../perception/depth_server/README.md)
 end to end: the source build, udev rules, the systemd service, and a
 `--synthetic` mode that lets you prove the whole HTTP + browser path before
@@ -228,10 +230,9 @@ DIMOS_DIR=/path/to/dimos ./scripts/scan.sh          # Mac; --device cuda for NVI
 ```
 
 Arrow keys pan/tilt the head from the station terminal, dimOS builds the map,
-Rerun opens by itself. **Caveat:** this path currently depends on the dimOS
-fork's private `xr-nav` submodule, so third parties can't run it yet — the
-details are in [station/README.md](../station/README.md). The L515 path below
-does not have this problem.
+Rerun opens by itself. Set up the pinned dimOS fork first, per
+[station/README.md](../station/README.md#1-which-dimos-the-fork-pinned) —
+clone it without submodules; the mapping modules it needs ship in this repo.
 
 ### 5c. RGB-D mapping and (dry-run) navigation
 

@@ -22,9 +22,10 @@ The mono path runs the pipeline script from our dimOS fork:
 
 - **Repo:** <https://github.com/TheWiselyBearded/dimos>
 - **Pinned commit:** `0d39b5ad4` (`0d39b5ad47fd0204b38faa5d2be72b64f947ab6b`)
-- **Submodule:** `xr-nav` @ `b96c95d8` (`b96c95d83371c042cd23763bec0f1c8cf3716dc6`)
+- **`xr_nav`:** vendored here in [`vendor/`](vendor/README.md) — you do
+  **not** need the fork's `xr-nav` submodule.
 
-The fork carries four things that upstream `dimensionalOS/dimos` has since
+The fork carries three things that upstream `dimensionalOS/dimos` has since
 refactored away:
 
 1. `mac_iphone_spatial_foxglove.py`, the end-to-end spatial pipeline script
@@ -33,44 +34,34 @@ refactored away:
 2. `viz_backend.py`, the Rerun visualization backend (`--viz rerun|foxglove|both`).
 3. `dimos/perception/depth/estimator.py`, the DepthPro and Depth-Anything-3
    estimator wrappers.
-4. The `xr-nav` submodule: voxel map, map I/O, keyframes, ICP registration,
-   CLI arg groups, and the vendored Depth-Anything-3 source.
 
 ```sh
-git clone --recurse-submodules https://github.com/TheWiselyBearded/dimos.git
-cd dimos && git checkout 0d39b5ad4 && git submodule update --init --recursive
+git clone https://github.com/TheWiselyBearded/dimos.git
+cd dimos && git checkout 0d39b5ad4
 export DIMOS_DIR=$PWD
 ```
 
-> **Caveat: the `xr-nav` submodule is private at the time of writing.**
-> Until it's made public, `--recurse-submodules` (and `git submodule update`)
-> fails for anyone outside the project. The top-level fork clones fine, but
-> the pipeline won't run without `xr-nav`, as explained below.
+Clone **without** `--recurse-submodules`: the fork's `xr-nav` submodule points
+at a private repository, and you don't need it. The pipeline script imports
+the `xr_nav` package unconditionally (its argument groups, voxel map, map I/O,
+keyframes, relocalization, and the ICP registration `server.py` enables by
+default), so the eleven modules it actually reaches are vendored in
+[`vendor/xr_nav/`](vendor/README.md), copied verbatim from the pinned
+submodule commit. `server.py` puts that copy first on `sys.path` after loading
+the fork script, so it's used whether the submodule directory is empty or
+populated.
 
-**Does the slim mono path (`--depth depthpro`) need `xr-nav` at runtime? Yes.**
-We checked the fork's script imports at `0d39b5ad4`:
+This was verified the way a newcomer would hit it: the pinned fork exported
+with an **empty** `xr-nav/` directory, a recorded session replayed through
+`replay_to_bridge.py`, and the full mono pipeline ran — DepthPro depth, ICP
+registration, a growing voxel map, and object detections — with `xr_nav`
+resolved from `station/vendor/`.
 
-- `mac_iphone_spatial_foxglove.py` puts `xr-nav/src` on `sys.path` at import
-  time. Inside `main()` it then imports `xr_nav.cli_args` **unconditionally**
-  while building its argument parser (`add_map_io_args`, `add_keyframe_args`,
-  `add_reloc_args`). Right after parsing, again unconditionally, it imports
-  `xr_nav.voxel_map`, `xr_nav.map_io`, `xr_nav.keyframe_recorder`,
-  `xr_nav.reference_map` and `xr_nav.relocalize_live`. None of this depends on
-  `--depth`.
-- `server.py` turns on `--registration icp` by default, which adds
-  `xr_nav.icp` and `xr_nav.keyframe` (`--no-registration` drops these two).
-- Only conditional: `xr_nav.scale_align` (relative DA3 only) and
-  `xr_nav.mv_window` (`--mv-window`).
-- What DepthPro does **not** need is the vendored Depth-Anything-3 source
-  inside `xr-nav` (`awesome-depth-anything-3` on macOS, `Depth-Anything-3`
-  elsewhere). The `da3` depth path loads that, and so do the `da3*` robot
-  presets.
-
-So the minimal runtime closure for `--depth depthpro` is the pure-Python
-`xr_nav` package (numpy / numba / scipy / open3d / opencv), not the DA3 weights
-or source. A third party without `xr-nav` access can't run the mono path
-today, even with DepthPro. The L515 path (`station/l515`) imports only `dimos.*`
-and never touches `xr_nav`.
+The one thing the vendored copy doesn't include is the Depth-Anything-3 source
+the submodule also carried. `--depth depthpro` (the default) doesn't need it.
+For the `da3*` depth models, install Depth-Anything-3 from
+[upstream](https://github.com/DepthAnything/Depth-Anything-3) into the same
+environment. The L515 path (`station/l515`) never touches `xr_nav`.
 
 ## 2. Python environment
 
@@ -82,9 +73,9 @@ One environment runs both the dimOS fork and this station code. Python 3.10-3.12
   `open3d`, `numba`, `rerun-sdk` and `dimos-lcm`. The `perception` extra adds
   `ultralytics` (YOLOE detection), `transformers[torch]` and `chromadb`
   (SpatialMemory's vector store).
-- **`$DIMOS_DIR/xr-nav/environment.yml`** (conda env, Python 3.12, with
-  `pytorch`, `numba`, `open3d`, `opencv-python`) plus `pip install -e
-  "$DIMOS_DIR/xr-nav"`. Private for now, see above.
+- **Vendored `xr_nav`:** needs nothing beyond the above — `numpy`, `numba`,
+  `scipy`, `open3d`, `opencv`, all already dimOS core dependencies. No install
+  step; `server.py` finds it on its own.
 
 On top of those, this directory needs:
 

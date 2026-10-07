@@ -46,6 +46,9 @@ _HERE = Path(__file__).resolve().parent
 _REPO = _HERE.parent.parent
 if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
+# The xr_nav modules the dimOS pipeline imports (voxel map, ICP, map IO,
+# keyframes, relocalization), vendored so the fork's submodule isn't needed.
+_VENDOR = _REPO / "station" / "vendor"
 
 from station.dimos_bridge.bridge import Bridge  # noqa: E402
 from station.dimos_bridge.frames import T_HEAD_CAM as _T_HEAD_CAM  # noqa: E402
@@ -190,6 +193,11 @@ def _load_dimos_module(dimos_dir: Path, script_name: str):
     mod = importlib.util.module_from_spec(spec)
     sys.modules["dimos_iphone"] = mod
     spec.loader.exec_module(mod)
+    # Loading the script put the fork's ``xr-nav/src`` submodule at the front of
+    # ``sys.path``, but its ``xr_nav`` imports only run later, inside ``main()``.
+    # Re-prepend the vendored copy so it wins whether the submodule is empty (a
+    # plain clone of the fork) or populated — every run uses the code that ships.
+    sys.path.insert(0, str(_VENDOR))
     return mod, script
 
 

@@ -124,11 +124,10 @@ DIMOS_DIR=/path/to/dimos ./scripts/scan.sh        # Mac; add --device cuda on NV
 # arrow keys / WASD pan-tilt the head; quit saves a map under ~/.dimos/sessions/
 ```
 
-> **Caveat:** modes 2 and 3a run the dimOS fork's pipeline, which imports its
-> `xr-nav` submodule unconditionally — and that repo is **private at the time
-> of writing**, so these paths don't work for third parties yet. Details in
-> [station/README.md](station/README.md#1-which-dimos-the-fork-pinned). The
-> RGB-D path below needs no `xr-nav`.
+> Modes 2 and 3a run the pipeline script from our pinned dimOS fork. Clone it
+> **without** `--recurse-submodules` — the `xr_nav` modules it needs are
+> vendored in [station/vendor/](station/vendor/README.md). Setup details:
+> [station/README.md](station/README.md#1-which-dimos-the-fork-pinned).
 
 **3b. RGB-D mapping + dry-run navigation — full build.** With the depth
 add-on attached and calibrated, and the wheels app deployed
@@ -169,10 +168,10 @@ scripts/           deploy.sh (apps → robot/sim) · scan.sh (one-command mono s
 - [dimOS](https://github.com/dimensionalOS/dimos) — the agentive operating
   system for physical space. This repo exists to show how little you need on
   top of it. The mono pipeline runs via
-  [our pinned fork](https://github.com/TheWiselyBearded/dimos), whose `xr-nav`
-  submodule is private at the time of writing — see
+  [our pinned fork](https://github.com/TheWiselyBearded/dimos) — see
   [station/README.md](station/README.md#1-which-dimos-the-fork-pinned) for
-  what that currently blocks (the L515 path is unaffected).
+  why the fork, and [station/vendor/](station/vendor/README.md) for the
+  mapping modules vendored from it.
 - [Reachy Mini](https://github.com/pollen-robotics/reachy_mini) by Pollen
   Robotics.
 - [Rerun](https://rerun.io) for visualization.
