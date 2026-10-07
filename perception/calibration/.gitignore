@@ -1,0 +1,8 @@
+# Captured calibration data and generated artifacts stay local.
+rgb-ipad/
+paired/
+*.jpg
+*.zip
+rgb-fit-report.json
+reachy-rgb-intrinsics-candidate.json
+paired-extrinsics-report.json

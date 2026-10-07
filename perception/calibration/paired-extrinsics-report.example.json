@@ -1,0 +1,306 @@
+{
+  "_example": "EXAMPLE ONLY - schema of fit_pair.py output with invented, rounded values. Do not use for projection; run the procedure in README.md.",
+  "status": "candidate_not_deployed",
+  "l515_serial": "EXAMPLE-SERIAL",
+  "views": 6,
+  "stereo_rms_pixels": 0.2,
+  "convention": "p_reachy_optical = R @ p_l515_optical + t; metres; x right, y down, z forward",
+  "l515_color_to_reachy_optical": [
+    [
+      0.99935,
+      -0.030093,
+      -0.019845,
+      0.004
+    ],
+    [
+      0.029893,
+      0.9995,
+      -0.010298,
+      -0.097
+    ],
+    [
+      0.020145,
+      0.009698,
+      0.99975,
+      0.011
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "l515_depth_to_reachy_optical": [
+    [
+      0.999288,
+      -0.032092,
+      -0.019845,
+      0.003549
+    ],
+    [
+      0.031892,
+      0.999438,
+      -0.010298,
+      -0.082007
+    ],
+    [
+      0.020165,
+      0.009657,
+      0.99975,
+      0.011145
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "translation_norm_m": 0.0977,
+  "square_length_m": 0.0235,
+  "scale_basis": "estimated iPad square size; translation scale is unvalidated",
+  "scope": "fixed head and sensor mounting only; no base_link transform or moving-head calibration",
+  "reachy_intrinsics": {
+    "camera": "reachy_head_camera_optical",
+    "image_size": [
+      1280,
+      720
+    ],
+    "model": "opencv_brown_conrady",
+    "distortion_order": [
+      "k1",
+      "k2",
+      "p1",
+      "p2",
+      "k3"
+    ],
+    "K": [
+      [
+        800.0,
+        0.0,
+        640.0
+      ],
+      [
+        0.0,
+        800.0,
+        360.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "D": [
+      -0.05,
+      0.07,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "views": 13,
+    "rms_pixels": 0.12,
+    "mean_leave_one_view_out_rms_pixels": 0.13,
+    "square_length_m": 0.0235,
+    "fit_model": "brown_4_fixed_k3",
+    "scale_basis": "provisional estimate from a photo of the displayed board",
+    "status": "candidate_not_deployed",
+    "scope": "RGB intrinsics only; no RGB-depth extrinsics, head kinematics, or metric validation"
+  },
+  "l515_color_intrinsics": {
+    "width": 640,
+    "height": 480,
+    "fx": 600.0,
+    "fy": 600.0,
+    "ppx": 320.0,
+    "ppy": 240.0,
+    "model": "distortion.brown_conrady",
+    "coeffs": [
+      0.15,
+      -0.45,
+      0.0,
+      0.0,
+      0.4
+    ]
+  },
+  "leave_one_pair_out": [
+    {
+      "view": "20250101T000010000000Z",
+      "reachy_prediction_rms_px": 0.4,
+      "l515_prediction_rms_px": 0.4,
+      "translation_delta_mm": 0.2,
+      "rotation_delta_deg": 0.05
+    },
+    {
+      "view": "20250101T000011000000Z",
+      "reachy_prediction_rms_px": 0.4,
+      "l515_prediction_rms_px": 0.4,
+      "translation_delta_mm": 0.2,
+      "rotation_delta_deg": 0.05
+    },
+    {
+      "view": "20250101T000012000000Z",
+      "reachy_prediction_rms_px": 0.4,
+      "l515_prediction_rms_px": 0.4,
+      "translation_delta_mm": 0.2,
+      "rotation_delta_deg": 0.05
+    },
+    {
+      "view": "20250101T000013000000Z",
+      "reachy_prediction_rms_px": 0.4,
+      "l515_prediction_rms_px": 0.4,
+      "translation_delta_mm": 0.2,
+      "rotation_delta_deg": 0.05
+    },
+    {
+      "view": "20250101T000014000000Z",
+      "reachy_prediction_rms_px": 0.4,
+      "l515_prediction_rms_px": 0.4,
+      "translation_delta_mm": 0.2,
+      "rotation_delta_deg": 0.05
+    },
+    {
+      "view": "20250101T000015000000Z",
+      "reachy_prediction_rms_px": 0.4,
+      "l515_prediction_rms_px": 0.4,
+      "translation_delta_mm": 0.2,
+      "rotation_delta_deg": 0.05
+    }
+  ],
+  "independent_pair_consistency": [
+    {
+      "translation_delta_mm": 2.0,
+      "rotation_delta_deg": 0.3
+    },
+    {
+      "translation_delta_mm": 2.0,
+      "rotation_delta_deg": 0.3
+    },
+    {
+      "translation_delta_mm": 2.0,
+      "rotation_delta_deg": 0.3
+    },
+    {
+      "translation_delta_mm": 2.0,
+      "rotation_delta_deg": 0.3
+    },
+    {
+      "translation_delta_mm": 2.0,
+      "rotation_delta_deg": 0.3
+    },
+    {
+      "translation_delta_mm": 2.0,
+      "rotation_delta_deg": 0.3
+    }
+  ],
+  "head_poses": [
+    {
+      "view": "20250101T000010000000Z",
+      "before": null,
+      "after": null,
+      "body_yaw": null
+    },
+    {
+      "view": "20250101T000011000000Z",
+      "before": {
+        "x": -0.003,
+        "y": 0.001,
+        "z": -0.001,
+        "roll": 0.03,
+        "pitch": 0.03,
+        "yaw": -0.03
+      },
+      "after": {
+        "x": -0.003,
+        "y": 0.001,
+        "z": -0.001,
+        "roll": 0.03,
+        "pitch": 0.03,
+        "yaw": -0.03
+      },
+      "body_yaw": -0.01
+    },
+    {
+      "view": "20250101T000012000000Z",
+      "before": {
+        "x": -0.003,
+        "y": 0.001,
+        "z": -0.001,
+        "roll": 0.03,
+        "pitch": 0.03,
+        "yaw": -0.03
+      },
+      "after": {
+        "x": -0.003,
+        "y": 0.001,
+        "z": -0.001,
+        "roll": 0.03,
+        "pitch": 0.03,
+        "yaw": -0.03
+      },
+      "body_yaw": -0.01
+    },
+    {
+      "view": "20250101T000013000000Z",
+      "before": {
+        "x": -0.003,
+        "y": 0.001,
+        "z": -0.001,
+        "roll": 0.03,
+        "pitch": 0.03,
+        "yaw": -0.03
+      },
+      "after": {
+        "x": -0.003,
+        "y": 0.001,
+        "z": -0.001,
+        "roll": 0.03,
+        "pitch": 0.03,
+        "yaw": -0.03
+      },
+      "body_yaw": -0.01
+    },
+    {
+      "view": "20250101T000014000000Z",
+      "before": {
+        "x": -0.003,
+        "y": 0.001,
+        "z": -0.001,
+        "roll": 0.03,
+        "pitch": 0.03,
+        "yaw": -0.03
+      },
+      "after": {
+        "x": -0.003,
+        "y": 0.001,
+        "z": -0.001,
+        "roll": 0.03,
+        "pitch": 0.03,
+        "yaw": -0.03
+      },
+      "body_yaw": -0.01
+    },
+    {
+      "view": "20250101T000015000000Z",
+      "before": {
+        "x": -0.003,
+        "y": 0.001,
+        "z": -0.001,
+        "roll": 0.03,
+        "pitch": 0.03,
+        "yaw": -0.03
+      },
+      "after": {
+        "x": -0.003,
+        "y": 0.001,
+        "z": -0.001,
+        "roll": 0.03,
+        "pitch": 0.03,
+        "yaw": -0.03
+      },
+      "body_yaw": -0.01
+    }
+  ],
+  "validation_note": "Fixed intrinsics; each held-out board pose is fitted in one camera, then projected into the other. Factory calibration and estimated board scale are not independent metric ground truth."
+}
