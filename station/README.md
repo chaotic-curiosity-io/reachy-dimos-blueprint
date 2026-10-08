@@ -11,9 +11,10 @@ into dimOS inputs. It has two independent paths:
 
 > **Built on [dimOS](https://github.com/dimensionalOS/dimos)** by
 > Dimensional, the agentive operating system for physical space. Everything
-> downstream of the bridge (depth-model wrappers, ObjectDB, SpatialMemory,
-> voxel mapping, LCM transports, message types, costmaps, the replanning A*
-> planner) is dimOS's. This directory is the glue that gets a Reachy Mini's
+> downstream of the bridge (ObjectDB, SpatialMemory, voxel mapping, LCM
+> transports, message types, costmaps, the replanning A* planner) is dimOS's;
+> the depth-model wrappers and the ObjectDB extensions come from our dimOS
+> fork (section 1). This directory is the glue that gets a Reachy Mini's
 > sensors into it.
 
 ## 1. Which dimOS: the fork, pinned
@@ -25,8 +26,8 @@ The mono path runs the pipeline script from our dimOS fork:
 - **`xr_nav`:** vendored here in [`vendor/`](vendor/README.md) — you do
   **not** need the fork's `xr-nav` submodule.
 
-The fork carries three things that upstream `dimensionalOS/dimos` has since
-refactored away:
+The fork carries three fork-only additions (written in the fork, not in
+upstream `dimensionalOS/dimos`):
 
 1. `mac_iphone_spatial_foxglove.py`, the end-to-end spatial pipeline script
    (depth -> pose -> ObjectDB -> SpatialMemory -> voxel map). `server.py` loads
@@ -60,7 +61,7 @@ resolved from `station/vendor/`.
 The one thing the vendored copy doesn't include is the Depth-Anything-3 source
 the submodule also carried. `--depth depthpro` (the default) doesn't need it.
 For the `da3*` depth models, install Depth-Anything-3 from
-[upstream](https://github.com/DepthAnything/Depth-Anything-3) into the same
+[upstream](https://github.com/ByteDance-Seed/Depth-Anything-3) into the same
 environment. The L515 path (`station/l515`) never touches `xr_nav`.
 
 ## 2. Python environment
@@ -202,8 +203,8 @@ missing.
 ## Credits
 
 - [dimensionalOS/dimos](https://github.com/dimensionalOS/dimos), the upstream
-  this all runs on. The fork above only exists to pin a known-good snapshot of
-  the spatial pipeline script and its helpers.
+  this all runs on. The fork above carries our spatial pipeline script, its
+  helpers and the ObjectDB extensions, pinned at a known-good commit.
 - [Apple ml-depth-pro](https://github.com/apple/ml-depth-pro) for monocular
   metric depth.
 - [Pollen Robotics](https://github.com/pollen-robotics/reachy_mini) for the

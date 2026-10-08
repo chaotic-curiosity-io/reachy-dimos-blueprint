@@ -5,8 +5,8 @@
 
 A stock [Reachy Mini](https://github.com/pollen-robotics/reachy_mini) has one
 mono RGB camera and no way to move. This repository is the complete,
-reproducible record of how we turned one into a robot that drives around a
-home, remembers where things are, and takes spoken commands — using only
+reproducible record of how we turned one into a robot that drives by
+following a person or taking voice commands, and remembers where things are — using only
 off-the-shelf parts and the glue code in this repo, with dimOS doing the heavy
 lifting.
 
@@ -22,9 +22,9 @@ live. (GitHub serves repo-hosted video as a download, so it opens in a new tab.)
 
 <p align="center">
   <a href="docs/diagrams/wiring-blueprint.svg"><img src="docs/diagrams/wiring-blueprint.svg" width="318" alt="Wiring blueprint of the mecanum base, top view: a battery feeds two L298N drivers, the ESP32's GPIO pairs drive each driver channel, and four TT motors turn mecanum wheels laid out in an X"></a>
-  <a href="docs/media/reachy-r3-stack.mp4"><img src="docs/media/reachy-driving.gif" width="440" alt="The finished robot — Reachy Mini on the mecanum base with the L515 clipped to its torso — driving itself across a wood floor between the legs of a dining table"></a>
+  <a href="docs/media/reachy-r3-stack.mp4"><img src="docs/media/reachy-driving.gif" width="440" alt="The finished robot — Reachy Mini on the mecanum base with the L515 clipped to its torso — following a person across a wood floor between the legs of a dining table"></a>
   <br>
-  <sub>The base's wiring blueprint (click to enlarge) and the finished robot driving itself between table legs.</sub>
+  <sub>The base's wiring blueprint (click to enlarge) and the finished robot following a person between table legs.</sub>
 </p>
 
 | | Parts |
@@ -50,7 +50,10 @@ live. (GitHub serves repo-hosted video as a download, so it opens in a new tab.)
    workbench experiments with MASt3R; we also ran **LingBot-Map**
    reconstruction on the Spark, which isn't packaged here yet.
 3. **Fed it into dimOS.** RGB-D and pose go into dimOS's own pipeline —
-   ObjectDB, SpatialMemory — unmodified. dimOS builds a persistent spatial map
+   ObjectDB, SpatialMemory — via our dimOS fork, which extends ObjectDB
+   (class-aware matching, a reprojection fallback that re-matches objects
+   after odometry drift, confidence decay that drops objects the camera should
+   see but no longer detects, and save/load). dimOS builds a persistent spatial map
    with remembered object surfaces; Rerun shows it live.
 4. **Built open-source wheels.** An ESP32, two hobby motor drivers, four
    mecanum wheels and their own battery make a wireless omnidirectional base
@@ -66,14 +69,15 @@ live. (GitHub serves repo-hosted video as a download, so it opens in a new tab.)
    dimOS.
 
 The result: a robot built from commodity primitives — an RGB camera, a depth
-sensor, a set of wheels — that dimOS turns into spatial memory, perception,
-and agentic control.
+sensor, a set of wheels — that dimOS turns into spatial memory and
+perception. Voice commands run through Gemini Live today; dimOS agentic
+control is the next step.
 
 ## dimOS building the map, live
 
 <p align="center">
   <img src="docs/media/dimos-scan-mono.gif" width="374" alt="Mono camera: the dimOS spatial map filling in from a few sparse surfaces to a dense, labelled room — chairs, cabinets, lamps, a laptop, a houseplant — while the robot stays in one place">
-  <img src="docs/media/reachy-drive-depth.gif" width="312" alt="Depth sensor: the live L515 point cloud on top, and below it the robot driving itself across a wood floor between the legs of a dining table">
+  <img src="docs/media/reachy-drive-depth.gif" width="312" alt="Depth sensor: the live L515 point cloud on top, and below it the robot following a person across a wood floor between the legs of a dining table">
 </p>
 
 **Left — mono camera, the robot stays put.** It only turns its head. Each
@@ -81,9 +85,9 @@ head-camera frame reaches the Mac with the head's exact pose at that instant;
 the Mac estimates metric depth with DepthPro, and dimOS fuses the result into
 a labelled 3D map. About four minutes of scanning at roughly 20× speed.
 
-**Right — depth sensor, the robot drives itself.** With the L515 streaming
+**Right — depth sensor, the robot follows a person.** With the L515 streaming
 measured point clouds and the wheels under it, the Reachy follows a person
-between the table legs. dimOS's own path planner runs on that depth too, in
+between the table legs. dimOS's own A* path planner runs on that depth too, in
 dry-run mode for now (see [Quick start](#quick-start)).
 
 The RGB-D path in Rerun, at three points in one drive around a room:
@@ -93,8 +97,11 @@ The RGB-D path in Rerun, at three points in one drive around a room:
 | ![Rerun with four panels: detector boxes on the head camera, a sparse active map segment, first labelled geometry clusters, RGB-D points projected over the camera image](docs/media/dimos-rerun-early.jpg) | ![The same layout later: ten labelled geometry clusters inside the bounding volume and a denser room point cloud](docs/media/dimos-rerun-mid.jpg) | ![End of scan: a person detected in the camera panel, remembered chair and microwave surfaces persisting in the map, a filled-out room point cloud](docs/media/dimos-rerun-late.jpg) |
 
 Note the labels that persist across all three frames — `chair (remembered
-surface)`, `microwave (remembered surface)`. Those are dimOS SpatialMemory
-entries outliving the current view: the robot remembers where things are even
+surface)`, `microwave (remembered surface)`. Those are object tracks in this
+repo's own persistent RGB-D store
+([`station/l515/persistent_rgbd.py`](station/l515/persistent_rgbd.py), drawn in
+Rerun by [`l515_rerun.py`](station/l515/l515_rerun.py)), not dimOS
+SpatialMemory, outliving the current view: the robot remembers where things are even
 when it's no longer looking at them. Full clip:
 [reachy-3d-perception.mp4](docs/media/reachy-3d-perception.mp4).
 
@@ -160,7 +167,7 @@ DIMOS_DIR=/path/to/dimos ./scripts/scan.sh        # Mac; add --device cuda on NV
 > **without** `--recurse-submodules` — the `xr_nav` modules it needs are
 > vendored in [station/vendor/](station/vendor/README.md). For
 > Depth-Anything-3 instead of DepthPro, pass `--depth da3` after installing
-> [Depth-Anything-3](https://github.com/DepthAnything/Depth-Anything-3).
+> [Depth-Anything-3](https://github.com/ByteDance-Seed/Depth-Anything-3).
 > Setup details: [station/README.md](station/README.md#1-which-dimos-the-fork-pinned).
 
 **4. RGB-D mapping + dry-run navigation — full build.** With the depth

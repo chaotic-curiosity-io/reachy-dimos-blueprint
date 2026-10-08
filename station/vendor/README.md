@@ -35,7 +35,7 @@ Dependencies are all dimOS core dependencies already: `numpy`, `numba`,
 
 Not vendored: the Depth-Anything-3 source the submodule also carried. The
 default `--depth depthpro` path doesn't use it; for the `da3*` depth models,
-install [Depth-Anything-3](https://github.com/DepthAnything/Depth-Anything-3)
+install [Depth-Anything-3](https://github.com/ByteDance-Seed/Depth-Anything-3)
 from upstream.
 
 ## Tests

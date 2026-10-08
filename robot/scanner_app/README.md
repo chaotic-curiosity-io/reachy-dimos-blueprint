@@ -154,7 +154,7 @@ survive restarts and redeploys.
 | `DIMOS_SCANNER_FRAME_HZ` | `5.0` | target send rate |
 | `DIMOS_SCANNER_POSE_HZ` | `20.0` | head-pose stream rate |
 | `DIMOS_SCANNER_IMU_HZ` / `DIMOS_SCANNER_IMU_ENABLED` | `50.0` / `1` | IMU stream (wireless Reachy Mini only) |
-| `DIMOS_SCANNER_DEPTH_MODEL` | `da3metric-large` | depth-model preference sent to the station in the WS hello |
+| `DIMOS_SCANNER_DEPTH_MODEL` | `da3metric-large` (`.env.example` sets `da3-small`) | depth-model preference sent to the station in the WS hello |
 | `DIMOS_SCANNER_SETTINGS_URL` | `http://0.0.0.0:8042` | in-app settings page bind URL (`""` disables it) |
 | `DIMOS_SCANNER_CONFIG` | `~/.config/dimos_scanner/config.json` | persisted settings file |
 
